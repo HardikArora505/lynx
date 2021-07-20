@@ -8,7 +8,7 @@ let port = process.env.PORT || 3000;
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
-app.get("/lyrics", async (req, res) => {
+app.get("/", async (req, res) => {
     const lyrics =
       (await lyricsFinder("Alan Walker","Lily")) || "No Lyrics Found"
     res.json({ lyrics })
@@ -17,5 +17,5 @@ app.get("/lyrics", async (req, res) => {
   
   
   app.listen(port,()=>{
-    console.log(`http://localhost:${port}/lyrics`)
+    console.log(`http://localhost:${port}`)
   });
