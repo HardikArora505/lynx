@@ -11,6 +11,11 @@ app.get("/lyrics", async (req, res) => {
     const lyrics =
       (await lyricsFinder("Alan Walker","Lily")) || "No Lyrics Found"
     res.json({ lyrics })
+    console.log(lyrics)
   })
   
-  app.listen(3000)
+  let port = process.env.PORT;
+  if (port == null || port == "") {
+    port = 8000;
+  }
+  app.listen(port);
