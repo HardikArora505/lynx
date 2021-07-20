@@ -15,5 +15,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "lyrics-finder": "^21.7.0"
+  },
+  "engines": {
+    "node": "v15.11.0"
   }
 }
