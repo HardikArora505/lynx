@@ -4,6 +4,7 @@ const bodyParser = require("body-parser")
 const lyricsFinder = require("lyrics-finder")
 // req.query.artist, req.query.track
 const app = express()
+let port = process.env.PORT || 3000;
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -14,8 +15,7 @@ app.get("/lyrics", async (req, res) => {
     console.log(lyrics)
   })
   
-  let port = process.env.PORT;
-  if (port == null || port == "") {
-    port = 8000;
-  }
-  app.listen(port);
+  
+  app.listen(port,()=>{
+    console.log(`http://localhost:${port}/lyrics`)
+  });
