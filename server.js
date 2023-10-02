@@ -7,32 +7,60 @@ let port = process.env.PORT || 3001;
 app.use(cors())
 app.use(express.json())
 
-async function getLyrics(artist, song) {
+async function getLyrics(artists, song) {
   try {
-      const songs = await Client.songs.search(`${artist} ${song}`);
-      const firstSong = songs[0];
-      const lyrics = await firstSong.lyrics();
-      return lyrics;
+    let i = 0, lyrics = null
+    while (i < artists.length && lyrics == null) {
+      const songs = await Client.songs.search(`${song} ${artists[i].name}`);
+      console.log("name===>", artists[i].name)
+      console.log("songs", songs[0])
+
+      if (songs[0]) {
+        lyrics = await songs[0].lyrics()
+        console.log(lyrics)
+      }
+      i++
+    }
+    if (!lyrics) {
+      i = 0
+      while (i < artists.length && lyrics == null) {
+        const songs = await Client.songs.search(`${artists[i].name} ${song}`);
+        console.log("name===>", artists[i].name)
+        console.log("songs", songs[0])
+
+        if (songs[0]) {
+          lyrics = await songs[0].lyrics()
+          console.log(lyrics)
+        }
+        i++
+      }
+    }
+    return lyrics;
   } catch (error) {
-      console.error(error);
-      return null;
+    console.error(error);
+    return null;
   }
 }
 
-app.get("/lyrics", async (req, res) => {
+app.post("/lyrics", async (req, res) => {
+  console.log(req.body.artists.map(e => e.name))
   try {
-    const lyrics=await getLyrics(req.query.track,req.query.artist)
-     res.json({lyrics:lyrics})
+    const lyrics = await getLyrics(req.body.artists, req.body.track)
+    if (lyrics) {
+      res.json({ lyrics: lyrics })
 
-     console.log("\n", lyrics, "\n");
+    }
+    else {
+      res.json({ lyrics: "No lyrics found" })
+    }
+  }
+  catch (err) {
+    console.log("ouch")
+    res.json({ lyrics: "No lyrics found for the song" })
+  }
+})
 
- }
- catch (err) {
-     res.json({lyrics:"No lyrics found"})
- }
-  })
-  
-  // app.listen(3000)
-  app.listen(port,()=>{
-    console.log(`http://localhost:${port}/lyrics`)
-  });
+// app.listen(3000)
+app.listen(port, () => {
+  console.log(`http://localhost:${port}/lyrics`)
+});
