@@ -1,21 +1,38 @@
 const express = require("express")
 const cors = require("cors")
-const bodyParser = require("body-parser")
-const lyricsFinder = require("lyrics-finder")
-// 
+const Genius = require("genius-lyrics");
+const Client = new Genius.Client();
 const app = express()
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 3001;
 app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+
+async function getLyrics(artist, song) {
+  try {
+      const songs = await Client.songs.search(`${artist} ${song}`);
+      const firstSong = songs[0];
+      const lyrics = await firstSong.lyrics();
+      return lyrics;
+  } catch (error) {
+      console.error(error);
+      return null;
+  }
+}
+
 app.get("/lyrics", async (req, res) => {
-    const lyrics =
-      (await lyricsFinder(req.query.artist, req.query.track)) || "No Lyrics Found"
-    res.json({ lyrics })
-    console.log(lyrics)
+  try {
+    const lyrics=await getLyrics(req.query.track,req.query.artist)
+     res.send(lyrics)
+
+     console.log("\n", lyrics, "\n");
+
+ }
+ catch (err) {
+     res.send("No lyrics found")
+ }
   })
   
-  
+  // app.listen(3000)
   app.listen(port,()=>{
     console.log(`http://localhost:${port}/lyrics`)
   });
