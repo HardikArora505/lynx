@@ -22,13 +22,13 @@ async function getLyrics(artist, song) {
 app.get("/lyrics", async (req, res) => {
   try {
     const lyrics=await getLyrics(req.query.track,req.query.artist)
-     res.send(lyrics)
+     res.json({lyrics:lyrics})
 
      console.log("\n", lyrics, "\n");
 
  }
  catch (err) {
-     res.send("No lyrics found")
+     res.json({lyrics:"No lyrics found"})
  }
   })
   
